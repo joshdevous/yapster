@@ -24,10 +24,11 @@
 		"sveltekit-superforms": "^2.19.1",
 		"tailwindcss": "^3.4.15",
 		"vite": "^5.0.3",
-		"zod": "^3.23.8"
+		"zod": "^4.6.7"
 	},
 	"type": "module",
 	"dependencies": {
+		"@opentelemetry/api": "^1.10.0",
 		"@sveltejs/adapter-node": "^5.2.12",
 		"apexcharts": "^4.1.0",
 		"better-auth": "^1.2.7",
@@ -42,5 +43,9 @@
 		"tailwind-variants": "^0.3.0",
 		"uuid": "^11.0.3",
 		"vaul-svelte": "^0.3.2"
+	},
+	"overrides": {
+		"rollup": "4.60.0",
+		"esbuild": "0.25.12"
 	}
 }
