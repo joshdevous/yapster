@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 
 WORKDIR /app
 
@@ -12,17 +12,21 @@ RUN npm ci
 # Copy source files and .env file
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application (better-auth refuses to load with its default secret, so give the
+# build step a throwaway one; the real secret comes from .env at runtime)
+RUN BETTER_AUTH_SECRET=build-time-placeholder npm run build
 
 # Production stage
-FROM node:20-slim AS production
+FROM node:22-slim AS production
 
 WORKDIR /app
 
 # Copy package files and install production dependencies
 COPY package*.json ./
-RUN npm ci --production
+RUN npm ci --omit=dev \
+    # esbuild is build tooling pulled in via vite; the runtime never executes it, and its Go binary
+    # carries a stdlib CVE, so drop it from the final image
+    && find node_modules -type d \( -name esbuild -o -name '@esbuild' \) -prune -exec rm -rf {} +
 
 # Copy built application from builder stage
 COPY --from=builder /app/build ./build
